@@ -7,10 +7,18 @@ const app = express();
 
 const PORT = process.env.PORT || 8000;
 
+//db Connection
+import { dbConnection } from "./src/config/dbConfig.js";
+dbConnection();
+
 //middlewares
 app.use(cors());
 app.use(helmet());
 app.use(express.json()); //for parser
+
+//apis
+import adminUserRouter from "./src/routers/adminUserRouter.js";
+app.use("/api/v1/admin-user", adminUserRouter);
 
 app.get("/", (req, res) => {
   res.json({
