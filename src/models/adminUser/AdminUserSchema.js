@@ -42,11 +42,7 @@ const adminUserSchema = new mongoose.Schema(
       type: String,
       deafult: null,
     },
-    emailValidationCode: {
-      type: String,
-      default: "",
-    },
-    refreshJWT: {
+    emailVerificationCode: {
       type: String,
       default: "",
     },
