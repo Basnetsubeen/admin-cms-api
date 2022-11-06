@@ -38,3 +38,13 @@ export const emailVerificationValidation = (req, res, next) => {
   //give data to the rules
   validator(schmea, req, res, next);
 };
+//for validating the user to login
+export const loginValidation = (req, res, next) => {
+  //define rulles
+  const schmea = Joi.object({
+    email: EMAIL.required(),
+    password: SHORTSTR.required(),
+  });
+  //give data to the rules
+  validator(schmea, req, res, next);
+};

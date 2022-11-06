@@ -1,15 +1,20 @@
 import express from "express";
-import { hashPassword } from "../helpers/bcryptHelper.js";
+import { comparePassword, hashPassword } from "../helpers/bcryptHelper.js";
 import {
   emailVerificationValidation,
+  loginValidation,
   newAdminUserValidation,
 } from "../middlewares/joi-validation/joiValidation.js";
 import {
+  findOneAdminUser,
   insertAdminUser,
   updateOneAdminUser,
 } from "../models/adminUser/AdminUserModel.js";
 import { v4 as uuidv4 } from "uuid";
-import { verificationEmail } from "../helpers/emailHelpers.js";
+import {
+  userVerificationNotification,
+  verificationEmail,
+} from "../helpers/emailHelpers.js";
 
 const router = express.Router();
 //server side validation
@@ -58,6 +63,7 @@ router.post("/", newAdminUserValidation, async (req, res, next) => {
     next(error);
   }
 });
+
 //verify admin user email
 router.patch(
   "/verify-email",
@@ -81,7 +87,7 @@ router.patch(
         ? res.json({
             status: "success",
             message: "The email has been verified, you may login now",
-          })
+          }) && userVerificationNotification(user)
         : res.json({
             status: "error",
             message: "Invalid or expired link, no action was taken",
@@ -92,4 +98,38 @@ router.patch(
   }
 );
 
+//log in admin user
+router.post("/login", loginValidation, async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    //find the if the user exist based on given email
+    const user = await findOneAdminUser({ email });
+
+    if (user?._id) {
+      if (user?.status !== "active")
+        res.json({
+          status: "error",
+          message: "Your account has not been verified, Please check you email",
+        });
+    }
+    //we need to verify if the password send by the user and hasdpassword store is same or not
+    const isMatched = comparePassword(password, user.password);
+
+    if (isMatched) {
+      user.password = undefined;
+      return res.json({
+        status: "success",
+        message: "Login Successsfully",
+        user,
+      });
+    }
+    res.json({
+      status: "error",
+      message: "Invalid login credentials",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 export default router;
