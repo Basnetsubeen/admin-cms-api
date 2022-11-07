@@ -46,6 +46,10 @@ const adminUserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    refeshJWT: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

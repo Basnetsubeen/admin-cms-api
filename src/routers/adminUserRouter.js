@@ -15,7 +15,7 @@ import {
   userVerificationNotification,
   verificationEmail,
 } from "../helpers/emailHelpers.js";
-import { singAccessJWT } from "../helpers/jwtHelper.js";
+import { createJWTs } from "../helpers/jwtHelper.js";
 
 const router = express.Router();
 //server side validation
@@ -120,12 +120,12 @@ router.post("/login", loginValidation, async (req, res, next) => {
     if (isMatched) {
       user.password = undefined;
       //jwt
-      const jwts = await singAccessJWT({ email });
+      const jwts = await createJWTs({ email });
       return res.json({
         status: "success",
         message: "Login Successsfully",
         user,
-        jwts,
+        ...jwts,
       });
     }
     res.json({
