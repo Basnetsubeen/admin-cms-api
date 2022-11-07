@@ -15,6 +15,7 @@ import {
   userVerificationNotification,
   verificationEmail,
 } from "../helpers/emailHelpers.js";
+import { singAccessJWT } from "../helpers/jwtHelper.js";
 
 const router = express.Router();
 //server side validation
@@ -108,7 +109,7 @@ router.post("/login", loginValidation, async (req, res, next) => {
 
     if (user?._id) {
       if (user?.status !== "active")
-        res.json({
+        return res.json({
           status: "error",
           message: "Your account has not been verified, Please check you email",
         });
@@ -118,10 +119,13 @@ router.post("/login", loginValidation, async (req, res, next) => {
 
     if (isMatched) {
       user.password = undefined;
+      //jwt
+      const jwts = await singAccessJWT({ email });
       return res.json({
         status: "success",
         message: "Login Successsfully",
         user,
+        jwts,
       });
     }
     res.json({
