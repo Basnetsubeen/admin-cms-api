@@ -48,3 +48,14 @@ export const loginValidation = (req, res, next) => {
   //give data to the rules
   validator(schmea, req, res, next);
 };
+
+// =======categories =======
+export const newCategoryValidation = (req, res, next) => {
+  req.body.parentId = req.body.parentId ? req.body.parentId : null;
+  const schmea = Joi.object({
+    status: STATUS,
+    name: SHORTSTR.required(),
+    parentId: SHORTSTR.allow(null, ""),
+  });
+  validator(schmea, req, res, next);
+};

@@ -26,4 +26,15 @@ Content-Type: application/json
     
 }
 
+### ======Category ===========###
+### category new category
+POST http://localhost:8000/api/v1/category
+Content-Type: application/json
 
+{
+    "status": "active",
+    "name": "Furniture",
+    "parentId": ""
+}
+### get categories
+GET http://localhost:8000/api/v1/category/63699837a666496ad3688fbe
